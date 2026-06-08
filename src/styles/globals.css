@@ -1,0 +1,55 @@
+:root {
+  --bg-primary: #08090E;
+  --bg-surface: rgba(255,255,255,0.05);
+  --bg-surface-hover: rgba(255,255,255,0.08);
+  --bg-glass: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.08);
+  --border-accent: rgba(99,179,237,0.3);
+  --accent-primary: #63B3ED;
+  --accent-secondary: #9F7AEA;
+  --accent-gradient: linear-gradient(135deg, #63B3ED, #9F7AEA);
+  --text-primary: #F0F4FF;
+  --text-secondary: rgba(240,244,255,0.5);
+  --text-muted: rgba(240,244,255,0.3);
+  --success: #48BB78;
+  --warning: #ECC94B;
+  --danger: #FC8181;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Hide scrollbars on mobile while keeping scroll */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Native select option background for dark theme */
+option {
+  background-color: #1a1b22;
+  color: #F0F4FF;
+}
