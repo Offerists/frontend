@@ -1,0 +1,755 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "AIProjectManager Mini App API",
+        "description": "REST API \u0434\u043b\u044f Telegram Mini App.\n\n**\u0410\u0443\u0442\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u044f** \u2014 \u0437\u0430\u0433\u043e\u043b\u043e\u0432\u043e\u043a `X-Telegram-Init-Data` \u0441\u043e \u0441\u0442\u0440\u043e\u043a\u043e\u0439 `initData` \u0438\u0437 `window.Telegram.WebApp.initData` (HMAC-SHA256, \u043f\u043e\u0434\u043f\u0438\u0441\u0430\u043d \u0431\u043e\u0442\u043e\u043c).\n\u0412\u0440\u0435\u043c\u044f \u0436\u0438\u0437\u043d\u0438 initData \u2014 24 \u0447\u0430\u0441\u0430.\n\n\u0412 dev-\u0440\u0435\u0436\u0438\u043c\u0435 (`MINIAPP_DEV_MODE=true`) \u0432\u043c\u0435\u0441\u0442\u043e initData \u043c\u043e\u0436\u043d\u043e \u043f\u0435\u0440\u0435\u0434\u0430\u0432\u0430\u0442\u044c \u0437\u0430\u0433\u043e\u043b\u043e\u0432\u043e\u043a `X-Dev-Telegram-User-Id` \u0441 \u0447\u0438\u0441\u043b\u043e\u0432\u044b\u043c Telegram ID \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f.\n",
+        "contact": {
+            "name": "AIProjectManager Team"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8081",
+            "description": "Generated server url"
+        }
+    ],
+    "security": [
+        {
+            "TelegramAuth": []
+        }
+    ],
+    "tags": [
+        {
+            "name": "YouGile Integration",
+            "description": "\u041f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u0435 \u0438 \u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0435\u0439 \u0441 YouGile"
+        },
+        {
+            "name": "User",
+            "description": "\u041f\u0440\u043e\u0444\u0438\u043b\u044c \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f"
+        },
+        {
+            "name": "Settings",
+            "description": "\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f"
+        },
+        {
+            "name": "Tasks",
+            "description": "\u0417\u0430\u0434\u0430\u0447\u0438 \u0442\u0435\u043a\u0443\u0449\u0435\u0439 \u0434\u043e\u0441\u043a\u0438 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f"
+        }
+    ],
+    "paths": {
+        "/api/v1/integrations/yougile/boards/{boardId}/select": {
+            "put": {
+                "tags": [
+                    "YouGile Integration"
+                ],
+                "summary": "\u0412\u044b\u0431\u0440\u0430\u0442\u044c \u0434\u043e\u0441\u043a\u0443",
+                "description": "\u0423\u0441\u0442\u0430\u043d\u0430\u0432\u043b\u0438\u0432\u0430\u0435\u0442 \u0443\u043a\u0430\u0437\u0430\u043d\u043d\u0443\u044e \u0434\u043e\u0441\u043a\u0443 \u043a\u0430\u043a \u0442\u0435\u043a\u0443\u0449\u0443\u044e \u0434\u043b\u044f \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f. \u0417\u0430\u0434\u0430\u0447\u0438 \u0432 `/api/v1/tasks` \u0431\u0443\u0434\u0443\u0442 \u0431\u0440\u0430\u0442\u044c\u0441\u044f \u0441 \u044d\u0442\u043e\u0439 \u0434\u043e\u0441\u043a\u0438.",
+                "operationId": "selectBoard",
+                "parameters": [
+                    {
+                        "name": "boardId",
+                        "in": "path",
+                        "description": "ID \u0434\u043e\u0441\u043a\u0438 \u0432 YouGile",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "\u0414\u043e\u0441\u043a\u0430 \u0432\u044b\u0431\u0440\u0430\u043d\u0430"
+                    },
+                    "401": {
+                        "description": "\u041d\u0435 \u0430\u0443\u0442\u0435\u043d\u0442\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "Missing X-Telegram-Init-Data header"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\u0414\u043e\u0441\u043a\u0430 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u0430",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "Board not found"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/integrations/yougile/connect": {
+            "post": {
+                "tags": [
+                    "YouGile Integration"
+                ],
+                "summary": "\u041f\u043e\u0434\u043a\u043b\u044e\u0447\u0438\u0442\u044c YouGile \u0430\u043a\u043a\u0430\u0443\u043d\u0442",
+                "description": "\u041f\u043e\u0434\u043a\u043b\u044e\u0447\u0430\u0435\u0442 YouGile \u0430\u043a\u043a\u0430\u0443\u043d\u0442 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f.\n\n**\u0428\u0430\u0433 1**: \u043f\u0435\u0440\u0435\u0434\u0430\u0442\u044c `email` + `password` \u0431\u0435\u0437 `companyId`.\n\u0415\u0441\u043b\u0438 \u0443 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f \u043d\u0435\u0441\u043a\u043e\u043b\u044c\u043a\u043e \u043a\u043e\u043c\u043f\u0430\u043d\u0438\u0439, \u0432\u0435\u0440\u043d\u0451\u0442\u0441\u044f `requiresCompanySelection: true`\n\u0438 \u0441\u043f\u0438\u0441\u043e\u043a \u043a\u043e\u043c\u043f\u0430\u043d\u0438\u0439.\n\n**\u0428\u0430\u0433 2**: \u043f\u043e\u0432\u0442\u043e\u0440\u0438\u0442\u044c \u0437\u0430\u043f\u0440\u043e\u0441 \u0441 \u0442\u0435\u043c \u0436\u0435 `email`/`password` \u0438 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u043c `companyId`.\n\u041f\u0440\u0438 \u0443\u0441\u043f\u0435\u0445\u0435 `connected: true` \u0438 \u0441\u043f\u0438\u0441\u043e\u043a \u0434\u043e\u0441\u0442\u0443\u043f\u043d\u044b\u0445 \u0434\u043e\u0441\u043e\u043a.\n",
+                "operationId": "connect",
+                "requestBody": {
+                    "description": "\u0423\u0447\u0451\u0442\u043d\u044b\u0435 \u0434\u0430\u043d\u043d\u044b\u0435 YouGile",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ConnectRequest"
+                            },
+                            "examples": {
+                                "\u0428\u0430\u0433 1 \u2014 \u0431\u0435\u0437 companyId": {
+                                    "description": "\u0428\u0430\u0433 1 \u2014 \u0431\u0435\u0437 companyId",
+                                    "value": {
+                                        "email": "user@example.com",
+                                        "password": "secret"
+                                    }
+                                },
+                                "\u0428\u0430\u0433 2 \u2014 \u0441 companyId": {
+                                    "description": "\u0428\u0430\u0433 2 \u2014 \u0441 companyId",
+                                    "value": {
+                                        "email": "user@example.com",
+                                        "password": "secret",
+                                        "companyId": "c1"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "\u0420\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442 \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConnectResponse"
+                                },
+                                "examples": {
+                                    "\u041e\u0434\u043d\u0430 \u043a\u043e\u043c\u043f\u0430\u043d\u0438\u044f \u2014 \u0443\u0441\u043f\u0435\u0445": {
+                                        "description": "\u041e\u0434\u043d\u0430 \u043a\u043e\u043c\u043f\u0430\u043d\u0438\u044f \u2014 \u0443\u0441\u043f\u0435\u0445",
+                                        "value": {
+                                            "connected": true,
+                                            "requiresCompanySelection": false,
+                                            "companies": [],
+                                            "boards": [
+                                                {
+                                                    "id": "board-uuid",
+                                                    "name": "\u0411\u044d\u043a\u043b\u043e\u0433",
+                                                    "isDefault": true
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "\u041d\u0435\u0441\u043a\u043e\u043b\u044c\u043a\u043e \u043a\u043e\u043c\u043f\u0430\u043d\u0438\u0439": {
+                                        "description": "\u041d\u0435\u0441\u043a\u043e\u043b\u044c\u043a\u043e \u043a\u043e\u043c\u043f\u0430\u043d\u0438\u0439",
+                                        "value": {
+                                            "connected": false,
+                                            "requiresCompanySelection": true,
+                                            "companies": [
+                                                {
+                                                    "id": "c1",
+                                                    "name": "\u041a\u043e\u043c\u043f\u0430\u043d\u0438\u044f \u0410"
+                                                },
+                                                {
+                                                    "id": "c2",
+                                                    "name": "\u041a\u043e\u043c\u043f\u0430\u043d\u0438\u044f \u0411"
+                                                }
+                                            ],
+                                            "boards": []
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "\u041d\u0435\u0432\u0435\u0440\u043d\u044b\u0435 \u0443\u0447\u0451\u0442\u043d\u044b\u0435 \u0434\u0430\u043d\u043d\u044b\u0435",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "Invalid credentials"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\u041d\u0435 \u0430\u0443\u0442\u0435\u043d\u0442\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "Missing X-Telegram-Init-Data header"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/tasks/{taskId}/status": {
+            "patch": {
+                "tags": [
+                    "Tasks"
+                ],
+                "summary": "\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u0441\u0442\u0430\u0442\u0443\u0441 \u0437\u0430\u0434\u0430\u0447\u0438",
+                "description": "\u041c\u0435\u043d\u044f\u0435\u0442 \u0441\u0442\u0430\u0442\u0443\u0441 \u0437\u0430\u0434\u0430\u0447\u0438 \u043f\u043e \u0435\u0451 ID. \u0414\u043e\u043f\u0443\u0441\u0442\u0438\u043c\u044b\u0435 \u0437\u043d\u0430\u0447\u0435\u043d\u0438\u044f: `TODO`, `IN_PROGRESS`, `REVIEW`, `DONE`.",
+                "operationId": "updateStatus",
+                "parameters": [
+                    {
+                        "name": "taskId",
+                        "in": "path",
+                        "description": "ID \u0437\u0430\u0434\u0430\u0447\u0438 \u0432 YouGile",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "\u041d\u043e\u0432\u044b\u0439 \u0441\u0442\u0430\u0442\u0443\u0441",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateTaskStatusRequest"
+                            },
+                            "example": {
+                                "status": "IN_PROGRESS"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "\u041e\u0431\u043d\u043e\u0432\u043b\u0451\u043d\u043d\u0430\u044f \u0437\u0430\u0434\u0430\u0447\u0430",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TaskDto"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\u041d\u0435 \u0430\u0443\u0442\u0435\u043d\u0442\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "Invalid or expired init data"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\u0417\u0430\u0434\u0430\u0447\u0430 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u0430",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "Task not found"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/settings/notifications": {
+            "get": {
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "\u041f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u0443\u0432\u0435\u0434\u043e\u043c\u043b\u0435\u043d\u0438\u0439",
+                "description": "\u0412\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u0435\u0442 \u0442\u0435\u043a\u0443\u0449\u0438\u0435 \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 Telegram-\u0443\u0432\u0435\u0434\u043e\u043c\u043b\u0435\u043d\u0438\u0439 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f.",
+                "operationId": "getNotifications",
+                "responses": {
+                    "200": {
+                        "description": "\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u0443\u0432\u0435\u0434\u043e\u043c\u043b\u0435\u043d\u0438\u0439",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotificationSettingsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\u041d\u0435 \u0430\u0443\u0442\u0435\u043d\u0442\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "Missing X-Telegram-Init-Data header"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u0443\u0432\u0435\u0434\u043e\u043c\u043b\u0435\u043d\u0438\u0439",
+                "description": "\u0418\u0437\u043c\u0435\u043d\u044f\u0435\u0442 \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u0443\u0432\u0435\u0434\u043e\u043c\u043b\u0435\u043d\u0438\u0439. \u041f\u0435\u0440\u0435\u0434\u0430\u0432\u0430\u0439\u0442\u0435 \u0442\u043e\u043b\u044c\u043a\u043e \u0442\u0435 \u043f\u043e\u043b\u044f, \u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u043d\u0443\u0436\u043d\u043e \u0438\u0437\u043c\u0435\u043d\u0438\u0442\u044c.",
+                "operationId": "updateNotifications",
+                "requestBody": {
+                    "description": "\u041f\u043e\u043b\u044f \u0434\u043b\u044f \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044f (null-\u043f\u043e\u043b\u044f \u0438\u0433\u043d\u043e\u0440\u0438\u0440\u0443\u044e\u0442\u0441\u044f)",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/NotificationSettingsRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "\u041e\u0431\u043d\u043e\u0432\u043b\u0451\u043d\u043d\u044b\u0435 \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotificationSettingsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\u041d\u0435 \u0430\u0443\u0442\u0435\u043d\u0442\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "Missing X-Telegram-Init-Data header"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/profile": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "\u041f\u0440\u043e\u0444\u0438\u043b\u044c \u0442\u0435\u043a\u0443\u0449\u0435\u0433\u043e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f",
+                "description": "\u0412\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u0435\u0442 \u043f\u0440\u043e\u0444\u0438\u043b\u044c \u0430\u0443\u0442\u0435\u043d\u0442\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u043e\u0433\u043e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f: Telegram-\u0434\u0430\u043d\u043d\u044b\u0435, \u0441\u0442\u0430\u0442\u0443\u0441 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438 \u0441 YouGile \u0438 \u0441\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043a\u0443 \u0437\u0430\u0434\u0430\u0447.",
+                "operationId": "getProfile",
+                "responses": {
+                    "200": {
+                        "description": "\u041f\u0440\u043e\u0444\u0438\u043b\u044c \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProfileResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\u041d\u0435 \u0430\u0443\u0442\u0435\u043d\u0442\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "Missing X-Telegram-Init-Data header"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/tasks": {
+            "get": {
+                "tags": [
+                    "Tasks"
+                ],
+                "summary": "\u041f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u0441\u043f\u0438\u0441\u043e\u043a \u0437\u0430\u0434\u0430\u0447",
+                "description": "\u0412\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u0435\u0442 \u0437\u0430\u0434\u0430\u0447\u0438 \u0441 \u0442\u0435\u043a\u0443\u0449\u0435\u0439 \u0434\u043e\u0441\u043a\u0438 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f. \u0424\u0438\u043b\u044c\u0442\u0440 `active` \u2014 \u0437\u0430\u0434\u0430\u0447\u0438 \u043d\u0435 \u0432 \u0441\u0442\u0430\u0442\u0443\u0441\u0435 DONE; `all` \u2014 \u0432\u0441\u0435 \u0437\u0430\u0434\u0430\u0447\u0438.",
+                "operationId": "getTasks",
+                "parameters": [
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "description": "\u0424\u0438\u043b\u044c\u0442\u0440: `active` (\u043f\u043e \u0443\u043c\u043e\u043b\u0447\u0430\u043d\u0438\u044e) \u0438\u043b\u0438 `all`",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "active",
+                            "enum": [
+                                "active",
+                                "all"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "\u0421\u043f\u0438\u0441\u043e\u043a \u0437\u0430\u0434\u0430\u0447",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "tasks": [
+                                            {
+                                                "id": "abc123",
+                                                "title": "\u0414\u043e\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c UI",
+                                                "description": "\u041f\u0440\u0430\u0432\u043a\u0438 \u043f\u043e \u043c\u0430\u043a\u0435\u0442\u0443",
+                                                "status": "IN_PROGRESS",
+                                                "statusLabel": "\u0412 \u0440\u0430\u0431\u043e\u0442\u0435",
+                                                "deadline": "2025-07-01T00:00:00",
+                                                "assigneeIds": [
+                                                    "user-uuid-1"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\u041e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442 \u0438\u043b\u0438 \u043d\u0435\u0432\u0430\u043b\u0438\u0434\u043d\u044b\u0439 X-Telegram-Init-Data",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "Missing X-Telegram-Init-Data header"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/integrations/yougile": {
+            "get": {
+                "tags": [
+                    "YouGile Integration"
+                ],
+                "summary": "\u0421\u0442\u0430\u0442\u0443\u0441 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438 \u0441 YouGile",
+                "description": "\u0412\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u0435\u0442 \u0442\u0435\u043a\u0443\u0449\u0435\u0435 \u0441\u043e\u0441\u0442\u043e\u044f\u043d\u0438\u0435 \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f \u043a YouGile.",
+                "operationId": "getStatus",
+                "responses": {
+                    "200": {
+                        "description": "\u0421\u0442\u0430\u0442\u0443\u0441 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/YouGileStatusResponse"
+                                },
+                                "example": {
+                                    "connected": true,
+                                    "companyId": "company-uuid",
+                                    "yougileUserId": "user-uuid",
+                                    "role": "admin"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\u041d\u0435 \u0430\u0443\u0442\u0435\u043d\u0442\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "Missing X-Telegram-Init-Data header"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/integrations/yougile/boards": {
+            "get": {
+                "tags": [
+                    "YouGile Integration"
+                ],
+                "summary": "\u0421\u043f\u0438\u0441\u043e\u043a \u0434\u043e\u0441\u0442\u0443\u043f\u043d\u044b\u0445 \u0434\u043e\u0441\u043e\u043a",
+                "description": "\u0412\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u0435\u0442 \u0432\u0441\u0435 \u0434\u043e\u0441\u043a\u0438 \u0442\u0435\u043a\u0443\u0449\u0435\u0439 \u043a\u043e\u043c\u043f\u0430\u043d\u0438\u0438 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f. \u041f\u043e\u043b\u0435 `isDefault` \u0443\u043a\u0430\u0437\u044b\u0432\u0430\u0435\u0442 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u0443\u044e \u0434\u043e\u0441\u043a\u0443.",
+                "operationId": "getBoards",
+                "responses": {
+                    "200": {
+                        "description": "\u0421\u043f\u0438\u0441\u043e\u043a \u0434\u043e\u0441\u043e\u043a",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "boards": [
+                                            {
+                                                "id": "board-1",
+                                                "name": "Sprint 1",
+                                                "isDefault": true
+                                            },
+                                            {
+                                                "id": "board-2",
+                                                "name": "\u0411\u044d\u043a\u043b\u043e\u0433",
+                                                "isDefault": false
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\u041d\u0435 \u0430\u0443\u0442\u0435\u043d\u0442\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "Missing X-Telegram-Init-Data header"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "BoardDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "isDefault": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "CompanyDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ConnectResponse": {
+                "type": "object",
+                "properties": {
+                    "connected": {
+                        "type": "boolean"
+                    },
+                    "requiresCompanySelection": {
+                        "type": "boolean"
+                    },
+                    "companies": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CompanyDto"
+                        }
+                    },
+                    "boards": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BoardDto"
+                        }
+                    }
+                }
+            },
+            "ConnectRequest": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "companyId": {
+                        "type": "string"
+                    }
+                }
+            },
+            "TaskDto": {
+                "type": "object",
+                "description": "\u0417\u0430\u0434\u0430\u0447\u0430",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "ID \u0437\u0430\u0434\u0430\u0447\u0438 \u0432 YouGile",
+                        "example": "abc123def456"
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0437\u0430\u0434\u0430\u0447\u0438",
+                        "example": "\u0414\u043e\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c UI \u043a\u043d\u043e\u043f\u043e\u043a"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u0437\u0430\u0434\u0430\u0447\u0438",
+                        "example": "\u041f\u0440\u0430\u0432\u043a\u0438 \u043f\u043e \u043c\u0430\u043a\u0435\u0442\u0443 v2"
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "\u0421\u0442\u0430\u0442\u0443\u0441",
+                        "enum": [
+                            "TODO",
+                            "IN_PROGRESS",
+                            "REVIEW",
+                            "DONE"
+                        ],
+                        "example": "IN_PROGRESS"
+                    },
+                    "statusLabel": {
+                        "type": "string",
+                        "description": "\u0427\u0438\u0442\u0430\u0435\u043c\u044b\u0439 \u0441\u0442\u0430\u0442\u0443\u0441 \u043d\u0430 \u0440\u0443\u0441\u0441\u043a\u043e\u043c",
+                        "example": "\u0412 \u0440\u0430\u0431\u043e\u0442\u0435"
+                    },
+                    "deadline": {
+                        "type": "string",
+                        "description": "\u0414\u0435\u0434\u043b\u0430\u0439\u043d \u0432 ISO 8601",
+                        "example": "2025-07-01T00:00:00"
+                    },
+                    "assigneeIds": {
+                        "type": "array",
+                        "description": "\u0421\u043f\u0438\u0441\u043e\u043a YouGile ID \u0438\u0441\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u0435\u0439",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "UpdateTaskStatusRequest": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string"
+                    }
+                }
+            },
+            "NotificationSettingsResponse": {
+                "type": "object",
+                "properties": {
+                    "digestEnabled": {
+                        "type": "boolean"
+                    },
+                    "remindersEnabled": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "NotificationSettingsRequest": {
+                "type": "object",
+                "properties": {
+                    "digestEnabled": {
+                        "type": "boolean"
+                    },
+                    "remindersEnabled": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "ProfileResponse": {
+                "type": "object",
+                "properties": {
+                    "telegramId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "username": {
+                        "type": "string"
+                    },
+                    "fullName": {
+                        "type": "string"
+                    },
+                    "yougileConnected": {
+                        "type": "boolean"
+                    },
+                    "yougileRole": {
+                        "type": "string"
+                    },
+                    "stats": {
+                        "$ref": "#/components/schemas/StatsDto"
+                    }
+                }
+            },
+            "StatsDto": {
+                "type": "object",
+                "properties": {
+                    "activeTasks": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "doneTasks": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "YouGileStatusResponse": {
+                "type": "object",
+                "properties": {
+                    "connected": {
+                        "type": "boolean"
+                    },
+                    "companyId": {
+                        "type": "string"
+                    },
+                    "yougileUserId": {
+                        "type": "string"
+                    },
+                    "role": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "TelegramAuth": {
+                "type": "apiKey",
+                "description": "Telegram WebApp initData \u2014 \u0441\u0442\u0440\u043e\u043a\u0430 URL-encoded \u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u043e\u0432 \u0441 \u043f\u043e\u043b\u0435\u043c hash. \u041f\u043e\u043b\u0443\u0447\u0430\u0435\u0442\u0441\u044f \u0438\u0437 window.Telegram.WebApp.initData.",
+                "name": "X-Telegram-Init-Data",
+                "in": "header"
+            }
+        }
+    }
+}
