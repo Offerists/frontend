@@ -9,9 +9,16 @@ export const onRequest: PagesFunction<{ BACKEND_URL?: string }> = async (context
   console.log(`[proxy] ${context.request.method} ${target} | headers: ${headerNames}`);
 
   try {
+    const outHeaders = new Headers();
+    for (const [key, value] of context.request.headers) {
+      if (!key.startsWith('cf-') && key !== 'host') {
+        outHeaders.set(key, value);
+      }
+    }
+
     const req = new Request(target, {
       method: context.request.method,
-      headers: context.request.headers,
+      headers: outHeaders,
       body: ['GET', 'HEAD'].includes(context.request.method) ? undefined : context.request.body,
     });
 
