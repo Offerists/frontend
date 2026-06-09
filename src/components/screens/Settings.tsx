@@ -16,7 +16,10 @@ const POPULAR_TIMEZONES = [
 
 function getAllTimezones(): string[] {
   try {
-    return (Intl as any).supportedValuesOf('timeZone') as string[];
+    const intl = Intl as typeof Intl & {
+      supportedValuesOf?: (key: string) => string[];
+    };
+    return intl.supportedValuesOf?.('timeZone') ?? POPULAR_TIMEZONES;
   } catch {
     return POPULAR_TIMEZONES;
   }

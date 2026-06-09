@@ -39,9 +39,15 @@ const cardVariants = {
   exit: { opacity: 0, y: -8, transition: { duration: 0.15 } },
 };
 
+function startOfToday(): Date {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
 function getDisplayStatus(task: TaskDto): DisplayStatus {
   if (task.status === 'DONE') return 'completed';
-  if (task.deadline && new Date(task.deadline) < new Date(new Date().toDateString())) return 'overdue';
+  if (task.deadline && new Date(task.deadline) < startOfToday()) return 'overdue';
   return 'active';
 }
 

@@ -32,7 +32,9 @@ export default function App() {
     try {
       WebApp.ready();
       WebApp.expand();
-    } catch (_) {}
+    } catch {
+      // not in Telegram context
+    }
   }, []);
 
   const Screen = ScreenComponents[activeTab];

@@ -23,15 +23,29 @@ const cardVariants = {
   animate: { opacity: 1, y: 0 },
 };
 
+function startOfToday(): Date {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
 function countOverdue(tasks: TaskDto[]) {
-  const today = new Date(new Date().toDateString());
+  const today = startOfToday();
   return tasks.filter(
     (t) => t.status !== 'DONE' && t.deadline && new Date(t.deadline) < today,
   ).length;
 }
 
+function getTgUser() {
+  try {
+    return WebApp.initDataUnsafe?.user;
+  } catch {
+    return undefined;
+  }
+}
+
 export default function Profile() {
-  const tgUser = WebApp.initDataUnsafe?.user;
+  const tgUser = getTgUser();
   const photoUrl = tgUser?.photo_url;
 
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
