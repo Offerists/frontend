@@ -7,6 +7,7 @@ import Tasks from './components/screens/Tasks';
 import Integrations from './components/screens/Integrations';
 import Settings from './components/screens/Settings';
 import TabBar from './components/ui/TabBar';
+import { getDebugAuthInfo } from './api/client';
 
 import './styles/globals.css';
 
@@ -38,6 +39,7 @@ export default function App() {
   }, []);
 
   const Screen = ScreenComponents[activeTab];
+  const debugInfo = getDebugAuthInfo();
 
   return (
     <div
@@ -62,6 +64,14 @@ export default function App() {
           <Screen key={activeTab} />
         </AnimatePresence>
       </main>
+
+      <div style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999,
+        background: 'rgba(0,0,0,0.85)', color: '#0f0', fontSize: 10,
+        padding: '4px 8px', wordBreak: 'break-all', fontFamily: 'monospace',
+      }}>
+        {debugInfo}
+      </div>
 
       <TabBar activeTab={activeTab} onChange={setActiveTab} />
     </div>

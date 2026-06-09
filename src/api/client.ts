@@ -2,22 +2,33 @@ import WebApp from '@twa-dev/sdk';
 
 const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const tgWindow = (typeof window !== 'undefined' ? (window as any).Telegram?.WebApp : undefined);
+
+export function getDebugAuthInfo(): string {
+  const sdkInitData = (() => { try { return WebApp.initData; } catch { return ''; } })();
+  const rawInitData = tgWindow?.initData ?? '';
+  return JSON.stringify({
+    sdk: sdkInitData ? sdkInitData.slice(0, 60) : 'EMPTY',
+    raw: rawInitData ? rawInitData.slice(0, 60) : 'EMPTY',
+    user: (() => { try { return WebApp.initDataUnsafe?.user?.id; } catch { return null; } })(),
+  });
+}
+
 function getAuthHeaders(): Record<string, string> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   try {
-    const initData = WebApp.initData;
-    console.log('[auth] initData:', initData ? `${initData.slice(0, 40)}...` : 'EMPTY');
-    console.log('[auth] user:', WebApp.initDataUnsafe?.user);
+    const initData = WebApp.initData || tgWindow?.initData || '';
     if (initData) {
       headers['X-Telegram-Init-Data'] = initData;
       return headers;
     }
-    const userId = WebApp.initDataUnsafe?.user?.id;
+    const userId = WebApp.initDataUnsafe?.user?.id ?? tgWindow?.initDataUnsafe?.user?.id;
     if (userId) {
       headers['X-Dev-Telegram-User-Id'] = String(userId);
     }
   } catch (e) {
-    console.error('[auth] SDK error:', e);
+    console.error('[auth] error:', e);
   }
   return headers;
 }
