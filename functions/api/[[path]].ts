@@ -16,6 +16,9 @@ export const onRequest: PagesFunction<{ BACKEND_URL?: string }> = async (context
       }
     }
 
+    console.log(`[proxy] outgoing x-telegram-init-data present: ${outHeaders.has('x-telegram-init-data')}`);
+    console.log(`[proxy] outgoing headers: ${[...outHeaders.keys()].join(', ')}`);
+
     const req = new Request(target, {
       method: context.request.method,
       headers: outHeaders,
