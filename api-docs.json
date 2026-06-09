@@ -10,7 +10,7 @@
     },
     "servers": [
         {
-            "url": "http://localhost:8081",
+            "url": "http://localhost:18080",
             "description": "Generated server url"
         }
     ],
@@ -23,6 +23,10 @@
         {
             "name": "YouGile Integration",
             "description": "Подключение и управление интеграцией с YouGile"
+        },
+        {
+            "name": "Users",
+            "description": "Пользователи YouGile-компании"
         },
         {
             "name": "User",
@@ -82,6 +86,137 @@
                                     "type": "string",
                                     "example": {
                                         "error": "Board not found"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/tasks": {
+            "get": {
+                "tags": [
+                    "Tasks"
+                ],
+                "summary": "Получить список задач",
+                "description": "Возвращает задачи с текущей доски пользователя. Фильтр `active` — задачи не в статусе DONE; `all` — все задачи.",
+                "operationId": "getTasks",
+                "parameters": [
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "description": "Фильтр: `active` (по умолчанию) или `all`",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "active",
+                            "enum": [
+                                "active",
+                                "all"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список задач",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "tasks": [
+                                            {
+                                                "id": "abc123",
+                                                "title": "Доработать UI",
+                                                "description": "Правки по макету",
+                                                "status": "IN_PROGRESS",
+                                                "statusLabel": "В работе",
+                                                "deadline": "2025-07-01T00:00:00",
+                                                "assigneeIds": [
+                                                    "user-uuid-1"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Отсутствует или невалидный X-Telegram-Init-Data",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "Missing X-Telegram-Init-Data header"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Tasks"
+                ],
+                "summary": "Создать задачу",
+                "description": "Создаёт новую задачу в YouGile в текущей выбранной доске пользователя. Если `columnId` не указан, задача создаётся в колонке TODO.",
+                "operationId": "createTask",
+                "requestBody": {
+                    "description": "Данные новой задачи",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateTaskRequest"
+                            },
+                            "example": {
+                                "title": "Доработать UI кнопок",
+                                "description": "Правки по макету v2",
+                                "deadlineMs": 1751328000000,
+                                "assigneeIds": [
+                                    "user-uuid-1"
+                                ]
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Созданная задача",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TaskDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Невалидные данные",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "title is required"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не аутентифицирован",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "Missing X-Telegram-Init-Data header"
                                     }
                                 }
                             }
@@ -353,6 +488,68 @@
                 }
             }
         },
+        "/api/v1/users": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Список пользователей компании",
+                "description": "Возвращает всех пользователей YouGile-компании текущего пользователя. Используется для выбора исполнителя при создании задачи.",
+                "operationId": "getUsers",
+                "responses": {
+                    "200": {
+                        "description": "Список пользователей",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "users": [
+                                            {
+                                                "id": "user-uuid-1",
+                                                "name": "Иван Петров",
+                                                "email": "ivan@example.com"
+                                            },
+                                            {
+                                                "id": "user-uuid-2",
+                                                "name": "Мария Сидорова",
+                                                "email": "maria@example.com"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не аутентифицирован",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "Missing X-Telegram-Init-Data header"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "YouGile не подключён",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "YouGile not connected. Complete onboarding first."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/profile": {
             "get": {
                 "tags": [
@@ -374,72 +571,6 @@
                     },
                     "401": {
                         "description": "Не аутентифицирован",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string",
-                                    "example": {
-                                        "error": "Missing X-Telegram-Init-Data header"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/tasks": {
-            "get": {
-                "tags": [
-                    "Tasks"
-                ],
-                "summary": "Получить список задач",
-                "description": "Возвращает задачи с текущей доски пользователя. Фильтр `active` — задачи не в статусе DONE; `all` — все задачи.",
-                "operationId": "getTasks",
-                "parameters": [
-                    {
-                        "name": "filter",
-                        "in": "query",
-                        "description": "Фильтр: `active` (по умолчанию) или `all`",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "default": "active",
-                            "enum": [
-                                "active",
-                                "all"
-                            ]
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Список задач",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string",
-                                    "example": {
-                                        "tasks": [
-                                            {
-                                                "id": "abc123",
-                                                "title": "Доработать UI",
-                                                "description": "Правки по макету",
-                                                "status": "IN_PROGRESS",
-                                                "statusLabel": "В работе",
-                                                "deadline": "2025-07-01T00:00:00",
-                                                "assigneeIds": [
-                                                    "user-uuid-1"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Отсутствует или невалидный X-Telegram-Init-Data",
                         "content": {
                             "*/*": {
                                 "schema": {
@@ -478,6 +609,32 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Не аутентифицирован",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": {
+                                        "error": "Missing X-Telegram-Init-Data header"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "YouGile Integration"
+                ],
+                "summary": "Отключить YouGile аккаунт",
+                "description": "Удаляет интеграцию с YouGile: очищает API-ключ, роль и выбранные доски пользователя.",
+                "operationId": "disconnect",
+                "responses": {
+                    "204": {
+                        "description": "Интеграция удалена"
                     },
                     "401": {
                         "description": "Не аутентифицирован",
@@ -547,6 +704,111 @@
     },
     "components": {
         "schemas": {
+            "AssigneeDto": {
+                "type": "object",
+                "description": "Исполнитель задачи",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "YouGile user ID",
+                        "example": "user-uuid-1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Имя пользователя",
+                        "example": "Иван Петров"
+                    }
+                }
+            },
+            "TaskDto": {
+                "type": "object",
+                "description": "Задача",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "ID задачи в YouGile",
+                        "example": "abc123def456"
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "Название задачи",
+                        "example": "Доработать UI кнопок"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Описание задачи",
+                        "example": "Правки по макету v2"
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "Статус",
+                        "enum": [
+                            "TODO",
+                            "IN_PROGRESS",
+                            "REVIEW",
+                            "DONE"
+                        ],
+                        "example": "IN_PROGRESS"
+                    },
+                    "statusLabel": {
+                        "type": "string",
+                        "description": "Читаемый статус на русском",
+                        "example": "В работе"
+                    },
+                    "deadline": {
+                        "type": "string",
+                        "description": "Дедлайн в ISO 8601",
+                        "example": "2025-07-01T00:00:00"
+                    },
+                    "assignees": {
+                        "type": "array",
+                        "description": "Исполнители задачи",
+                        "items": {
+                            "$ref": "#/components/schemas/AssigneeDto"
+                        }
+                    }
+                }
+            },
+            "CreateTaskRequest": {
+                "type": "object",
+                "description": "Запрос на создание задачи",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "description": "Название задачи",
+                        "example": "Доработать UI кнопок"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Описание задачи",
+                        "example": "Правки по макету v2"
+                    },
+                    "deadlineMs": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Дедлайн в миллисекундах (Unix timestamp)",
+                        "example": 1751328000000
+                    },
+                    "assigneeIds": {
+                        "type": "array",
+                        "description": "YouGile ID исполнителей",
+                        "example": [
+                            "user-uuid-1"
+                        ],
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "columnId": {
+                        "type": "string",
+                        "description": "ID колонки в YouGile (по умолчанию — колонка TODO текущей доски)",
+                        "example": "column-uuid"
+                    }
+                },
+                "required": [
+                    "title"
+                ]
+            },
             "BoardDto": {
                 "type": "object",
                 "properties": {
@@ -609,55 +871,6 @@
                     }
                 }
             },
-            "TaskDto": {
-                "type": "object",
-                "description": "Задача",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "description": "ID задачи в YouGile",
-                        "example": "abc123def456"
-                    },
-                    "title": {
-                        "type": "string",
-                        "description": "Название задачи",
-                        "example": "Доработать UI кнопок"
-                    },
-                    "description": {
-                        "type": "string",
-                        "description": "Описание задачи",
-                        "example": "Правки по макету v2"
-                    },
-                    "status": {
-                        "type": "string",
-                        "description": "Статус",
-                        "enum": [
-                            "TODO",
-                            "IN_PROGRESS",
-                            "REVIEW",
-                            "DONE"
-                        ],
-                        "example": "IN_PROGRESS"
-                    },
-                    "statusLabel": {
-                        "type": "string",
-                        "description": "Читаемый статус на русском",
-                        "example": "В работе"
-                    },
-                    "deadline": {
-                        "type": "string",
-                        "description": "Дедлайн в ISO 8601",
-                        "example": "2025-07-01T00:00:00"
-                    },
-                    "assigneeIds": {
-                        "type": "array",
-                        "description": "Список YouGile ID исполнителей",
-                        "items": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
             "UpdateTaskStatusRequest": {
                 "type": "object",
                 "properties": {
@@ -668,23 +881,43 @@
             },
             "NotificationSettingsResponse": {
                 "type": "object",
+                "description": "Настройки уведомлений и часовой пояс",
                 "properties": {
                     "digestEnabled": {
-                        "type": "boolean"
+                        "type": "boolean",
+                        "description": "Дайджест задач включён",
+                        "example": true
                     },
                     "remindersEnabled": {
-                        "type": "boolean"
+                        "type": "boolean",
+                        "description": "Напоминания о дедлайнах включены",
+                        "example": true
+                    },
+                    "timezone": {
+                        "type": "string",
+                        "description": "Часовой пояс в формате IANA",
+                        "example": "Europe/Moscow"
                     }
                 }
             },
             "NotificationSettingsRequest": {
                 "type": "object",
+                "description": "Обновление настроек уведомлений (null-поля игнорируются)",
                 "properties": {
                     "digestEnabled": {
-                        "type": "boolean"
+                        "type": "boolean",
+                        "description": "Включить/выключить дайджест задач",
+                        "example": true
                     },
                     "remindersEnabled": {
-                        "type": "boolean"
+                        "type": "boolean",
+                        "description": "Включить/выключить напоминания о дедлайнах",
+                        "example": false
+                    },
+                    "timezone": {
+                        "type": "string",
+                        "description": "Часовой пояс в формате IANA",
+                        "example": "Europe/Moscow"
                     }
                 }
             },
