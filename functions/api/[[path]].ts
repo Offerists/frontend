@@ -1,8 +1,7 @@
-const BACKEND = 'http://85.94.164.150:8085';
-
-export const onRequest: PagesFunction = async (context) => {
+export const onRequest: PagesFunction<{ BACKEND_URL: string }> = async (context) => {
+  const backend = context.env.BACKEND_URL;
   const url = new URL(context.request.url);
-  const target = `${BACKEND}${url.pathname}${url.search}`;
+  const target = `${backend}${url.pathname}${url.search}`;
 
   const req = new Request(target, {
     method: context.request.method,
