@@ -5,16 +5,28 @@ export const onRequest: PagesFunction<{ BACKEND_URL?: string }> = async (context
   const url = new URL(context.request.url);
   const target = `${backend}${url.pathname}${url.search}`;
 
-  const req = new Request(target, {
-    method: context.request.method,
-    headers: context.request.headers,
-    body: ['GET', 'HEAD'].includes(context.request.method) ? undefined : context.request.body,
-  });
+  console.log(`[proxy] ${context.request.method} ${target}`);
 
-  const res = await fetch(req);
+  try {
+    const req = new Request(target, {
+      method: context.request.method,
+      headers: context.request.headers,
+      body: ['GET', 'HEAD'].includes(context.request.method) ? undefined : context.request.body,
+    });
 
-  const headers = new Headers(res.headers);
-  headers.set('Access-Control-Allow-Origin', '*');
+    const res = await fetch(req);
 
-  return new Response(res.body, { status: res.status, headers });
+    console.log(`[proxy] response ${res.status} from ${target}`);
+
+    const headers = new Headers(res.headers);
+    headers.set('Access-Control-Allow-Origin', '*');
+
+    return new Response(res.body, { status: res.status, headers });
+  } catch (err) {
+    console.error(`[proxy] failed to reach ${target}:`, err);
+    return new Response(JSON.stringify({ error: 'Failed to reach backend', detail: String(err) }), {
+      status: 502,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+    });
+  }
 };
