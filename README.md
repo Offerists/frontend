@@ -1,73 +1,62 @@
-# React + TypeScript + Vite
+# Miniapp frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript + Vite фронтенд для Telegram Mini App. По умолчанию приложение ходит в реальный backend, а не в моковые данные.
 
-Currently, two official plugins are available:
+## Что нужно для запуска
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js 18+.
+- Доступный backend API.
+- Если запускаешь локально, backend должен быть доступен по адресу из `VITE_API_URL` либо через Vite proxy.
 
-## React Compiler
+## Установка
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Запуск в режиме разработки
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+После запуска Vite откроет приложение на локальном адресе, обычно `http://localhost:5173`.
+
+### Подключение к реальному API
+
+Фронтенд берёт базовый адрес API из переменной окружения `VITE_API_URL`.
+
+Если переменная не задана, запросы идут относительным путём `/api`, а в `vite.config.ts` этот путь проксируется на backend:
+
+```ts
+/api -> http://85.94.164.150:8080
+```
+
+Если нужен другой сервер, создай файл `.env.local` в корне проекта и задай свой адрес:
+
+```bash
+VITE_API_URL=http://localhost:8080
+```
+
+## Сборка
+
+```bash
+npm run build
+```
+
+## Проверка стиля
+
+```bash
+npm run lint
+```
+
+## Просмотр production-сборки
+
+```bash
+npm run preview
+```
+
+## Примечания
+
+- Для Telegram Mini App приложение использует `@twa-dev/sdk` и читает auth-заголовки из Telegram init data, если они доступны.
+- Экран интеграций уже работает через реальные API-эндпоинты YouGile: статус подключения, список досок и выбор доски.

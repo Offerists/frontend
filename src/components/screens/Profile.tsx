@@ -1,10 +1,12 @@
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy } from 'lucide-react';
 import WebApp from '@twa-dev/sdk';
 import GlassCard from '../ui/GlassCard';
 import Badge from '../ui/Badge';
-import { mockProfile } from '../../mock/profile';
-import { mockTasks } from '../../mock/tasks';
+import { getProfile } from '../../api/profile';
+import { getTasks } from '../../api/tasks';
+import type { ProfileResponse, TaskDto } from '../../types/api';
 
 const pageVariants = {
   initial: { opacity: 0, y: 8 },
@@ -21,22 +23,36 @@ const cardVariants = {
   animate: { opacity: 1, y: 0 },
 };
 
+function countOverdue(tasks: TaskDto[]) {
+  const today = new Date(new Date().toDateString());
+  return tasks.filter(
+    (t) => t.status !== 'DONE' && t.deadline && new Date(t.deadline) < today,
+  ).length;
+}
+
 export default function Profile() {
   const tgUser = WebApp.initDataUnsafe?.user;
   const photoUrl = tgUser?.photo_url;
+
+  const [profile, setProfile] = useState<ProfileResponse | null>(null);
+  const [overdue, setOverdue] = useState(0);
+
+  useEffect(() => {
+    getProfile().then(setProfile).catch(() => {});
+    getTasks('all')
+      .then((tasks) => setOverdue(countOverdue(tasks)))
+      .catch(() => {});
+  }, []);
+
   const name = tgUser?.first_name
     ? `${tgUser.first_name} ${tgUser.last_name ?? ''}`.trim()
-    : mockProfile.name;
-  const username = tgUser?.username ? `@${tgUser.username}` : mockProfile.username;
-
-  const activeTasks = mockTasks.filter((t) => t.status === 'active').length;
-  const completedTasks = mockTasks.filter((t) => t.status === 'completed').length;
-  const overdueTasks = mockTasks.filter((t) => t.status === 'overdue').length;
+    : profile?.fullName ?? '—';
+  const username = tgUser?.username ? `@${tgUser.username}` : profile?.username ? `@${profile.username}` : '';
 
   const stats = [
-    { label: 'Активных', value: activeTasks, color: 'var(--accent-primary)' },
-    { label: 'Выполнено', value: completedTasks, color: 'var(--success)' },
-    { label: 'Просрочено', value: overdueTasks, color: 'var(--danger)' },
+    { label: 'Активных', value: profile?.stats.activeTasks ?? 0, color: 'var(--accent-primary)' },
+    { label: 'Выполнено', value: profile?.stats.doneTasks ?? 0, color: 'var(--success)' },
+    { label: 'Просрочено', value: overdue, color: 'var(--danger)' },
   ];
 
   return (
@@ -163,7 +179,6 @@ export default function Profile() {
         transition={{ duration: 0.2, delay: 0.18 }}
       >
         <GlassCard gradient style={{ position: 'relative', overflow: 'hidden', padding: 0 }}>
-          {/* Blurred background content */}
           <div
             style={{
               padding: 16,
@@ -201,17 +216,9 @@ export default function Profile() {
                 marginBottom: 8,
               }}
             />
-            <div
-              style={{
-                height: 8,
-                borderRadius: 4,
-                background: 'var(--bg-surface)',
-                width: '100%',
-              }}
-            />
+            <div style={{ height: 8, borderRadius: 4, background: 'var(--bg-surface)', width: '100%' }} />
           </div>
 
-          {/* Overlay */}
           <div
             style={{
               position: 'absolute',

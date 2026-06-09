@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ExternalLink, CheckCircle } from 'lucide-react';
-import WebApp from '@twa-dev/sdk';
+import { CheckCircle, ExternalLink } from 'lucide-react';
 import GlassCard from '../ui/GlassCard';
 import Badge from '../ui/Badge';
-import { mockYougile } from '../../mock/integrations';
+import { getBoards, getYougileStatus, selectBoard } from '../../api/integrations';
+import type { BoardDto, YouGileStatusResponse } from '../../types/api';
 
 const SOON_SERVICES = [
   'Jira',
@@ -38,14 +38,6 @@ function avatarColor(name: string) {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
-}
-
-function openUrl(url: string) {
-  try {
-    WebApp.openLink(url);
-  } catch {
-    window.open(url, '_blank');
-  }
 }
 
 const pageVariants = {
@@ -138,6 +130,45 @@ function SoonCard({ name }: { name: string }) {
 }
 
 export default function Integrations() {
+  const [status, setStatus] = useState<YouGileStatusResponse | null>(null);
+  const [boards, setBoards] = useState<BoardDto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [savingBoardId, setSavingBoardId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    Promise.all([getYougileStatus(), getBoards()])
+      .then(([yougileStatus, boardList]) => {
+        if (cancelled) return;
+        setStatus(yougileStatus);
+        setBoards(boardList);
+      })
+      .catch((e: Error) => {
+        if (cancelled) return;
+        setError(e.message);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function handleSelectBoard(boardId: string) {
+    setSavingBoardId(boardId);
+    try {
+      await selectBoard(boardId);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Не удалось выбрать доску');
+    } finally {
+      setSavingBoardId(null);
+    }
+  }
+
   return (
     <motion.div
       variants={pageVariants}
@@ -217,7 +248,11 @@ export default function Integrations() {
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  {mockYougile.email}
+                  {loading
+                    ? 'Загрузка статуса...'
+                    : status?.connected
+                      ? `Компания ${status.companyId ?? 'не указана'} · ${status.role ?? 'роль не задана'}`
+                      : 'Подключение не настроено'}
                 </div>
               </div>
 
@@ -237,9 +272,9 @@ export default function Integrations() {
                     color: 'var(--success)',
                     fontFamily: 'DM Sans, sans-serif',
                   }}
-                >
-                  Активно
-                </span>
+                  >
+                    {status?.connected ? 'Активно' : 'Неактивно'}
+                  </span>
               </div>
             </div>
 
@@ -248,36 +283,77 @@ export default function Integrations() {
 
             {/* Board list */}
             <div style={{ padding: '8px 0' }}>
-              {mockYougile.boards.map((board) => (
-                <button
-                  key={board.url}
-                  onClick={() => openUrl(board.url)}
+              {loading ? (
+                <div
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    width: '100%',
                     padding: '10px 16px',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
                     fontFamily: 'DM Sans, sans-serif',
                     fontSize: 14,
-                    color: 'var(--text-primary)',
-                    textAlign: 'left',
-                    transition: 'background 0.15s',
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-surface-hover)';
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.background = 'none';
+                    color: 'var(--text-muted)',
                   }}
                 >
-                  <span>{board.name}</span>
-                  <ExternalLink size={14} color="var(--text-muted)" />
-                </button>
-              ))}
+                  Загрузка досок...
+                </div>
+              ) : error ? (
+                <div
+                  style={{
+                    padding: '10px 16px',
+                    fontFamily: 'DM Sans, sans-serif',
+                    fontSize: 14,
+                    color: 'var(--danger)',
+                  }}
+                >
+                  {error}
+                </div>
+              ) : boards.length === 0 ? (
+                <div
+                  style={{
+                    padding: '10px 16px',
+                    fontFamily: 'DM Sans, sans-serif',
+                    fontSize: 14,
+                    color: 'var(--text-muted)',
+                  }}
+                >
+                  Доски не найдены
+                </div>
+              ) : (
+                boards.map((board) => (
+                  <button
+                    key={board.id}
+                    onClick={() => handleSelectBoard(board.id)}
+                    disabled={savingBoardId === board.id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      width: '100%',
+                      padding: '10px 16px',
+                      background: 'none',
+                      border: 'none',
+                      cursor: savingBoardId === board.id ? 'wait' : 'pointer',
+                      fontFamily: 'DM Sans, sans-serif',
+                      fontSize: 14,
+                      color: 'var(--text-primary)',
+                      textAlign: 'left',
+                      transition: 'background 0.15s',
+                      opacity: savingBoardId === board.id ? 0.7 : 1,
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-surface-hover)';
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background = 'none';
+                    }}
+                  >
+                    <span>{board.name}</span>
+                    {board.isDefault ? (
+                      <CheckCircle size={14} color="var(--success)" />
+                    ) : (
+                      <ExternalLink size={14} color="var(--text-muted)" />
+                    )}
+                  </button>
+                ))
+              )}
             </div>
           </GlassCard>
         </motion.div>

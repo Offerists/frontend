@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, CheckSquare, ExternalLink } from 'lucide-react';
 import WebApp from '@twa-dev/sdk';
 import GlassCard from '../ui/GlassCard';
 import Badge from '../ui/Badge';
 import AccentButton from '../ui/AccentButton';
-import { mockTasks } from '../../mock/tasks';
-import type { TaskStatus } from '../../mock/tasks';
+import { getTasks } from '../../api/tasks';
+import type { TaskDto } from '../../types/api';
 
 type Filter = 'all' | 'active' | 'overdue';
+type DisplayStatus = 'active' | 'overdue' | 'completed';
 
 const filters: { id: Filter; label: string }[] = [
   { id: 'all', label: 'Все' },
@@ -16,7 +17,7 @@ const filters: { id: Filter; label: string }[] = [
   { id: 'overdue', label: 'Просроченные' },
 ];
 
-const statusColor: Record<TaskStatus, string> = {
+const statusColor: Record<DisplayStatus, string> = {
   active: 'var(--accent-primary)',
   overdue: 'var(--danger)',
   completed: 'var(--success)',
@@ -38,14 +39,15 @@ const cardVariants = {
   exit: { opacity: 0, y: -8, transition: { duration: 0.15 } },
 };
 
+function getDisplayStatus(task: TaskDto): DisplayStatus {
+  if (task.status === 'DONE') return 'completed';
+  if (task.deadline && new Date(task.deadline) < new Date(new Date().toDateString())) return 'overdue';
+  return 'active';
+}
+
 function formatDeadline(dateStr: string) {
   const d = new Date(dateStr);
   return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
-}
-
-function isOverdue(dateStr: string, status: TaskStatus) {
-  if (status === 'completed') return false;
-  return new Date(dateStr) < new Date(new Date().toDateString());
 }
 
 function openYouGile() {
@@ -59,10 +61,22 @@ function openYouGile() {
 
 export default function Tasks() {
   const [activeFilter, setActiveFilter] = useState<Filter>('all');
+  const [tasks, setTasks] = useState<TaskDto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filtered = mockTasks.filter((t) => {
+  useEffect(() => {
+    getTasks('all')
+      .then(setTasks)
+      .catch((e: Error) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const filtered = tasks.filter((t) => {
     if (activeFilter === 'all') return true;
-    return t.status === activeFilter;
+    const status = getDisplayStatus(t);
+    if (activeFilter === 'overdue') return status === 'overdue';
+    return status === 'active';
   });
 
   return (
@@ -83,13 +97,7 @@ export default function Tasks() {
       }}
     >
       {/* Filter tabs */}
-      <div
-        style={{
-          display: 'flex',
-          gap: 8,
-          padding: '16px 16px 0',
-        }}
-      >
+      <div style={{ display: 'flex', gap: 8, padding: '16px 16px 0' }}>
         {filters.map(({ id, label }) => {
           const isActive = activeFilter === id;
           return (
@@ -124,7 +132,23 @@ export default function Tasks() {
         style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}
       >
         <AnimatePresence mode="popLayout">
-          {filtered.length === 0 ? (
+          {loading ? (
+            <motion.div
+              key="loading"
+              variants={cardVariants}
+              style={{ textAlign: 'center', padding: '48px 16px', color: 'var(--text-muted)', fontSize: 14 }}
+            >
+              Загрузка...
+            </motion.div>
+          ) : error ? (
+            <motion.div
+              key="error"
+              variants={cardVariants}
+              style={{ textAlign: 'center', padding: '48px 16px', color: 'var(--danger)', fontSize: 14 }}
+            >
+              {error}
+            </motion.div>
+          ) : filtered.length === 0 ? (
             <motion.div
               key="empty"
               variants={cardVariants}
@@ -146,8 +170,9 @@ export default function Tasks() {
             </motion.div>
           ) : (
             filtered.map((task) => {
-              const overdue = isOverdue(task.deadline, task.status);
-              const deadlineColor = overdue ? 'var(--danger)' : 'var(--text-secondary)';
+              const displayStatus = getDisplayStatus(task);
+              const deadlineColor =
+                displayStatus === 'overdue' ? 'var(--danger)' : 'var(--text-secondary)';
 
               return (
                 <motion.div
@@ -158,17 +183,14 @@ export default function Tasks() {
                 >
                   <GlassCard style={{ padding: 0, overflow: 'hidden' }}>
                     <div style={{ display: 'flex', alignItems: 'stretch' }}>
-                      {/* Status stripe */}
                       <div
                         style={{
                           width: 3,
                           borderRadius: '3px 0 0 3px',
-                          background: statusColor[task.status],
+                          background: statusColor[displayStatus],
                           flexShrink: 0,
                         }}
                       />
-
-                      {/* Content */}
                       <div style={{ flex: 1, padding: '12px 14px' }}>
                         <div
                           style={{
@@ -190,28 +212,23 @@ export default function Tasks() {
                             justifyContent: 'space-between',
                           }}
                         >
-                          <div
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 5,
-                              fontSize: 12,
-                              color: deadlineColor,
-                              fontFamily: 'DM Sans, sans-serif',
-                            }}
-                          >
-                            <Clock
-                              size={13}
-                              color={deadlineColor}
-                              style={{ flexShrink: 0 }}
-                            />
-                            <span>{formatDeadline(task.deadline)}</span>
-                            <span style={{ color: 'var(--text-muted)', marginLeft: 2 }}>
-                              · {task.assignee}
-                            </span>
-                          </div>
+                          {task.deadline && (
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 5,
+                                fontSize: 12,
+                                color: deadlineColor,
+                                fontFamily: 'DM Sans, sans-serif',
+                              }}
+                            >
+                              <Clock size={13} color={deadlineColor} style={{ flexShrink: 0 }} />
+                              <span>{formatDeadline(task.deadline)}</span>
+                            </div>
+                          )}
 
-                          <Badge status={task.status} />
+                          <Badge status={displayStatus} />
                         </div>
                       </div>
                     </div>
@@ -224,15 +241,7 @@ export default function Tasks() {
       </motion.div>
 
       {/* Fixed bottom button */}
-      <div
-        style={{
-          position: 'fixed',
-          bottom: 80,
-          left: 16,
-          right: 16,
-          zIndex: 50,
-        }}
-      >
+      <div style={{ position: 'fixed', bottom: 80, left: 16, right: 16, zIndex: 50 }}>
         <AccentButton fullWidth onClick={openYouGile}>
           <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
             <ExternalLink size={16} />
