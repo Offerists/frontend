@@ -5,7 +5,8 @@ export const onRequest: PagesFunction<{ BACKEND_URL?: string }> = async (context
   const url = new URL(context.request.url);
   const target = `${backend}${url.pathname}${url.search}`;
 
-  console.log(`[proxy] ${context.request.method} ${target}`);
+  const headerNames = [...context.request.headers.keys()].join(', ');
+  console.log(`[proxy] ${context.request.method} ${target} | headers: ${headerNames}`);
 
   try {
     const req = new Request(target, {
@@ -15,6 +16,15 @@ export const onRequest: PagesFunction<{ BACKEND_URL?: string }> = async (context
     });
 
     const res = await fetch(req);
+
+    if (res.status >= 400) {
+      const body = await res.text();
+      console.error(`[proxy] ${res.status} from ${target} | body: ${body}`);
+      const headers = new Headers();
+      headers.set('Access-Control-Allow-Origin', '*');
+      headers.set('Content-Type', 'application/json');
+      return new Response(body, { status: res.status, headers });
+    }
 
     console.log(`[proxy] response ${res.status} from ${target}`);
 

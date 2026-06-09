@@ -6,6 +6,8 @@ function getAuthHeaders(): Record<string, string> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   try {
     const initData = WebApp.initData;
+    console.log('[auth] initData:', initData ? `${initData.slice(0, 40)}...` : 'EMPTY');
+    console.log('[auth] user:', WebApp.initDataUnsafe?.user);
     if (initData) {
       headers['X-Telegram-Init-Data'] = initData;
       return headers;
@@ -14,8 +16,8 @@ function getAuthHeaders(): Record<string, string> {
     if (userId) {
       headers['X-Dev-Telegram-User-Id'] = String(userId);
     }
-  } catch {
-    // not in Telegram context
+  } catch (e) {
+    console.error('[auth] SDK error:', e);
   }
   return headers;
 }
